@@ -15,16 +15,19 @@ import { useEffect, useState } from "react";
 import { getAllPosts, getLatestPosts } from "../../service";
 import useFirebase from "../../lib/useFirebase";
 import VideoCard from "../../components/VideoCard";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const home = () => {
+  const { user } = useGlobalContext();
   const { data: posts, refetch, isLoading } = useFirebase(getAllPosts);
-  const { data: latestPosts } = useFirebase(getLatestPosts);
+  const { data: latestPosts, refetch: refetchLatests } =
+    useFirebase(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    //recall posts
-    // await refetch();
+    await refetch();
+    await refetchLatests();
     setRefreshing(false);
   };
 
@@ -42,7 +45,7 @@ const home = () => {
                   Welcome Back
                 </Text>
                 <Text className="text-2xl font-psemibold text-white">
-                  JsMastery
+                  {user?.email != null && user.email.split("@")[0]}
                 </Text>
               </View>
               <View className="mt-1.5">

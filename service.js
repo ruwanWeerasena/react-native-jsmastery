@@ -1,5 +1,7 @@
 import auth from "@react-native-firebase/auth";
 import firestore, { doc, getFirestore } from "@react-native-firebase/firestore";
+import storage from "@react-native-firebase/storage";
+import { Alert } from "react-native";
 
 export const CreateUser = async (username, email, password) => {
   try {
@@ -69,7 +71,7 @@ export const getLatestPosts = async () => {
   try {
     const posts = await firestore()
       .collection("videos")
-      .orderBy("createdAt", "asc")
+      .orderBy("createdAt", "desc")
       .limit(7)
       .get();
 
@@ -94,6 +96,45 @@ export const searchPosts = async (query) => {
       });
     }
     return [];
+  } catch (error) {
+    console.log("Error", error);
+    throw new Error(error);
+  }
+};
+
+export const signOut = async (query) => {
+  try {
+    await auth().signOut();
+  } catch (error) {
+    console.log("Error", error);
+    throw new Error(error);
+  }
+};
+
+export const createVideoPost = async (form) => {
+  try {
+    const videoRef = storage().ref(form.video.fileName);
+    const thumbnailRef = storage().ref(form.thumbnail.fileName);
+    const [thumbnailUrl, videoUrl] = await Promise.all([
+      thumbnailRef.putFile(form.thumbnail.uri),
+      videoRef.putFile(form.video.uri),
+    ]);
+
+    if (thumbnailUrl.state == "success" && videoUrl.state == "success") {
+      const url1 = await videoRef.getDownloadURL();
+      const url2 = await thumbnailRef.getDownloadURL();
+      const ref = firestore().collection("users").doc(form.userId);
+      await firestore().collection("videos").doc().set({
+        createdAt: new Date(),
+        creator: ref,
+        prompt: form.prompt,
+        thumbnail: url2,
+        video: url1,
+        title: form.title,
+      });
+    } else {
+      Alert.alert("Error", "Upload Failed");
+    }
   } catch (error) {
     console.log("Error", error);
     throw new Error(error);

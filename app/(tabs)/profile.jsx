@@ -5,21 +5,24 @@ import SearchInput from "../../components/SearchInput";
 
 import EmptyState from "../../components/EmptyState";
 import { useEffect } from "react";
-import { getUser, getUserPosts, searchPosts } from "../../service";
+import { getUser, getUserPosts, searchPosts, signOut } from "../../service";
 import useFirebase from "../../lib/useFirebase";
 import VideoCard from "../../components/VideoCard";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
 import InfoBox from "../../components/InfoBox";
 
 const Profile = () => {
-  const { user: session } = useGlobalContext();
+  const { user: session, setUser, setIsLoggedIn } = useGlobalContext();
   const { data: user } = useFirebase(() => getUser(session.uid));
-  const { data: posts, refetch } = useFirebase(() =>
-    getUserPosts("83RgLNRVIdanyPFW3cAaUvVdkq33")
-  );
-  const logout = () => {};
+  const { data: posts, refetch } = useFirebase(() => getUserPosts(session.uid));
+  const logout = async () => {
+    await signOut();
+    setUser(null);
+    setIsLoggedIn(false);
+    router.replace("/sign-in");
+  };
   console.log(user);
 
   return (
