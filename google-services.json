@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "116405570477",
+    "project_id": "aora-a5765",
+    "storage_bucket": "aora-a5765.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:116405570477:android:c089d386dc546dbcde6f24",
+        "android_client_info": {
+          "package_name": "com.jsm.aora"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaF4KlT1lnaiUaxRJMMhqwowPRYy2IWDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
